@@ -47,8 +47,8 @@ app.post("/notify-role", async (req, res) => {
   try {
     const employeeTokens = [];
     const querySnapshot = await db
-      .collection("users")
-      .where("role", "==", role)
+      .collection("usuarios_app")
+      .where("tipo", "==", role)
       .get();
     querySnapshot.forEach((doc) => {
       const data = doc.data();
