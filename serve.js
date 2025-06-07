@@ -17,6 +17,8 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+const cors = require('cors');
+app.use(cors());
 
 app.use(bodyParser.json());
 
