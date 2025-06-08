@@ -124,7 +124,10 @@ app.post("/registrar-paciente", async (req, res) => {
 
   try {
     // 1. Crear el usuario en Firebase Authentication (sin iniciar sesión)
-    const userRecord = await getAuth().createUser({
+    
+    //const userRecord = await getAuth().createUser({
+
+    const userRecord = await admin.auth().createUser({
       email,
       password,
       emailVerified: false,
