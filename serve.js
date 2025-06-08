@@ -115,6 +115,93 @@ app.post("/send-mail", async (req, res) => {
   }
 });
 
+app.post("/registrar-paciente", async (req, res) => {
+  const { nombre, apellido, edad, dni, obraSocial, email, password, rol, imagen1Url, imagen2Url } = req.body;
+
+  if (!email || !password || !rol) {
+    return res.status(400).send("Faltan campos requeridos (email, password, rol)");
+  }
+
+  try {
+    // 1. Crear el usuario en Firebase Authentication (sin iniciar sesión)
+    const userRecord = await getAuth().createUser({
+      email,
+      password,
+      emailVerified: false,
+      disabled: false,
+    });
+
+    const uid = userRecord.uid;
+
+    // 2. Guardar en Firestore
+    const usuarioData = {
+      uid,
+      nombre,
+      apellido,
+      edad,
+      dni,
+      obraSocial: obraSocial || '',
+      email,
+      rol,
+      aprobado: rol === 'especialista' ? false : true,
+      imagen1Url: imagen1Url || '',
+      imagen2Url: imagen2Url || '',
+    };
+
+    await db.collection("sala_medica_usuarios").doc(uid).set(usuarioData);
+
+    res.status(201).json({ mensaje: "Usuario registrado correctamente", uid });
+
+  } catch (error) {
+    console.error("Error al registrar usuario:", error);
+    res.status(500).json({ mensaje: "Error al registrar usuario", error: error.message });
+  }
+});
+
+
+app.post("/registrar-especialista", async (req, res) => {
+  const { nombre, apellido, edad, dni, obraSocial, email, password, rol, imagen2Url } = req.body;
+
+  if (!email || !password || !rol) {
+    return res.status(400).send("Faltan campos requeridos (email, password, rol)");
+  }
+
+  try {
+    // 1. Crear el usuario en Firebase Authentication (sin iniciar sesión)
+    const userRecord = await getAuth().createUser({
+      email,
+      password,
+      emailVerified: false,
+      disabled: false,
+    });
+
+    const uid = userRecord.uid;
+
+    // 2. Guardar en Firestore
+    const usuarioData = {
+      uid,
+      nombre,
+      apellido,
+      edad,
+      dni,
+      obraSocial: obraSocial || '',
+      email,
+      rol,
+      aprobado: rol === 'especialista' ? false : true,
+      imagen1Url: imagen1Url || '',
+      imagen2Url: imagen2Url || '',
+    };
+
+    await db.collection("sala_medica_usuarios").doc(uid).set(usuarioData);
+
+    res.status(201).json({ mensaje: "Usuario registrado correctamente", uid });
+
+  } catch (error) {
+    console.error("Error al registrar usuario:", error);
+    res.status(500).json({ mensaje: "Error al registrar usuario", error: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
