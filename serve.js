@@ -136,7 +136,6 @@ app.post("/registrar-paciente", async (req, res) => {
 
     const uid = userRecord.uid;
 
-    // 2. Guardar en Firestore
     const usuarioData = {
       uid,
       nombre,
@@ -146,7 +145,7 @@ app.post("/registrar-paciente", async (req, res) => {
       obraSocial: obraSocial || '',
       email,
       rol,
-      aprobado: rol === 'especialista' ? false : true,
+    //  aprobado: rol === 'especialista' ? false : true,
       imagen1Url: imagen1Url || '',
       imagen2Url: imagen2Url || '',
     };
@@ -161,16 +160,24 @@ app.post("/registrar-paciente", async (req, res) => {
   }
 });
 
-
 app.post("/registrar-especialista", async (req, res) => {
-  const { nombre, apellido, edad, dni, obraSocial, email, password, rol, imagen2Url } = req.body;
+  const {
+    nombre,
+    apellido,
+    edad,
+    dni,
+    email,
+    password,
+    especialidades,
+    imagenUrl
+  } = req.body;
 
-  if (!email || !password || !rol) {
-    return res.status(400).send("Faltan campos requeridos (email, password, rol)");
+  if (!email || !password || !especialidades || !Array.isArray(especialidades)) {
+    return res.status(400).json({ mensaje: "Faltan campos requeridos o especialidades inválidas" });
   }
 
   try {
-    // 1. Crear el usuario en Firebase Authentication (sin iniciar sesión)
+    // Crear el usuario en Auth
     const userRecord = await getAuth().createUser({
       email,
       password,
@@ -180,28 +187,77 @@ app.post("/registrar-especialista", async (req, res) => {
 
     const uid = userRecord.uid;
 
-    // 2. Guardar en Firestore
+    // Construir objeto a guardar
     const usuarioData = {
       uid,
       nombre,
       apellido,
       edad,
       dni,
-      obraSocial: obraSocial || '',
       email,
-      rol,
-      aprobado: rol === 'especialista' ? false : true,
-      imagen1Url: imagen1Url || '',
-      imagen2Url: imagen2Url || '',
+      rol: 'especialista',
+      aprobado: false,
+      especialidades,
+      imagenUrl: imagenUrl || '',
     };
 
     await db.collection("sala_medica_usuarios").doc(uid).set(usuarioData);
 
-    res.status(201).json({ mensaje: "Usuario registrado correctamente", uid });
+    res.status(201).json({ mensaje: "Especialista registrado correctamente", uid });
 
   } catch (error) {
-    console.error("Error al registrar usuario:", error);
-    res.status(500).json({ mensaje: "Error al registrar usuario", error: error.message });
+    console.error("Error al registrar especialista:", error);
+    res.status(500).json({ mensaje: "Error al registrar especialista", error: error.message });
+  }
+});
+
+
+app.post("/registrar-admin", async (req, res) => {
+  const {
+    nombre,
+    apellido,
+    edad,
+    dni,
+    email,
+    password,
+    imagenUrl
+  } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ mensaje: "Faltan campos requeridos" });
+  }
+
+  try {
+    // Crear el usuario en Auth
+    const userRecord = await getAuth().createUser({
+      email,
+      password,
+      emailVerified: false,
+      disabled: false,
+    });
+
+    const uid = userRecord.uid;
+
+    // Construir objeto a guardar
+    const usuarioData = {
+      uid,
+      nombre,
+      apellido,
+      edad,
+      dni,
+      email,
+      rol: 'admin',
+      aprobado: false,
+      imagenUrl: imagenUrl || '',
+    };
+
+    await db.collection("sala_medica_usuarios").doc(uid).set(usuarioData);
+
+    res.status(201).json({ mensaje: "admin registrado correctamente", uid });
+
+  } catch (error) {
+    console.error("Error al registrar admin:", error);
+    res.status(500).json({ mensaje: "Error al registrar admin", error: error.message });
   }
 });
 
