@@ -178,7 +178,7 @@ app.post("/registrar-especialista", async (req, res) => {
 
   try {
     // Crear el usuario en Auth
-    const userRecord = await getAuth().createUser({
+    const userRecord = await admin.auth().createUser({
       email,
       password,
       emailVerified: false,
@@ -229,7 +229,7 @@ app.post("/registrar-admin", async (req, res) => {
 
   try {
     // Crear el usuario en Auth
-    const userRecord = await getAuth().createUser({
+    const userRecord = await admin.auth().createUser({
       email,
       password,
       emailVerified: false,
