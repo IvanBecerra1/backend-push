@@ -116,7 +116,7 @@ app.post("/send-mail", async (req, res) => {
 });
 
 app.post("/registrar-paciente", async (req, res) => {
-  const { nombre, apellido, edad, dni, obraSocial, email, password, rol, imagen1Url, imagen2Url } = req.body;
+  const { nombre, apellido, edad, dni, obraSocial, email, password, rol, imagenUrl, imagen2Url } = req.body;
 
   if (!email || !password || !rol) {
     return res.status(400).send("Faltan campos requeridos (email, password, rol)");
@@ -146,7 +146,7 @@ app.post("/registrar-paciente", async (req, res) => {
       email,
       rol,
     //  aprobado: rol === 'especialista' ? false : true,
-      imagen1Url: imagen1Url || '',
+      imagen1Url: imagenUrl || '',
       imagen2Url: imagen2Url || '',
     };
 
