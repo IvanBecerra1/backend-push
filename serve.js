@@ -146,7 +146,7 @@ app.post("/registrar-paciente", async (req, res) => {
       email,
       rol,
     //  aprobado: rol === 'especialista' ? false : true,
-      imagen1Url: imagenUrl || '',
+      imagenUrl: imagenUrl || '',
       imagen2Url: imagen2Url || '',
     };
 
