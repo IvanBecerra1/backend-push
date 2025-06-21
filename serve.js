@@ -22,6 +22,7 @@ app.use(cors());
 
 app.use(bodyParser.json());
 
+
 // Endpoint para enviar una notificación a un usuario específico
 app.post("/notify", async (req, res) => {
   const { token, title, body } = req.body;
@@ -38,6 +39,36 @@ app.post("/notify", async (req, res) => {
     const response = await admin.messaging().send(message);
     res.status(200).send(`Mensaje enviado correctamente: ${response}`);
   } catch (error) {
+    res.status(500).send(`Error al enviar el mensaje: ${error}`);
+  }
+});
+
+
+app.post("/notify-new", async (req, res) => {
+  const { token, title, body } = req.body;
+
+  const message = {
+    token: token,
+    android: {
+      priority: "high",
+      notification: {
+        title: title,
+        body: body,
+        channelId: "default", // Debe coincidir con el ID que definiste en LocalNotifications.createChannel
+        sound: "default"
+      },
+    },
+    data: {
+      title: title,
+      body: body
+    }
+  };
+
+  try {
+    const response = await admin.messaging().send(message);
+    res.status(200).send(`Mensaje enviado correctamente: ${response}`);
+  } catch (error) {
+    console.error("Error al enviar mensaje:", error);
     res.status(500).send(`Error al enviar el mensaje: ${error}`);
   }
 });
@@ -114,6 +145,8 @@ app.post("/send-mail", async (req, res) => {
     });
   }
 });
+
+/*
 
 app.post("/registrar-paciente", async (req, res) => {
   const { nombre, apellido, edad, dni, obraSocial, email, password, rol, imagenUrl, imagen2Url } = req.body;
@@ -209,9 +242,9 @@ app.post("/registrar-especialista", async (req, res) => {
     console.error("Error al registrar especialista:", error);
     res.status(500).json({ mensaje: "Error al registrar especialista", error: error.message });
   }
-});
+});*/
 
-
+/*
 app.post("/registrar-admin", async (req, res) => {
   const {
     nombre,
@@ -259,7 +292,7 @@ app.post("/registrar-admin", async (req, res) => {
     console.error("Error al registrar admin:", error);
     res.status(500).json({ mensaje: "Error al registrar admin", error: error.message });
   }
-});
+});*/
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
